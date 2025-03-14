@@ -1,0 +1,2 @@
+# DocuQuery-AI-Powered-PDF-Knowledge-Assistant-Using-Google-PALM
+Welcome to DocuQuery, an AI-powered PDF Knowledge Assistant designed to revolutionize how you interact with documents. This repository hosts the complete source code and documentation for DocuQuery, a cutting-edge tool that leverages Google's PaLM (Pathways Language Model) to provide intelligent, context-aware insights from your PDF documents.
