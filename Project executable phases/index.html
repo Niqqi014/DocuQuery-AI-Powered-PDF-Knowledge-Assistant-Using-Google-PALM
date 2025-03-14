@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocQuery: AI-Powered Document Querying</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .upload-box {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: center;
+            background-color: #e9f5ff;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .upload-box.dragover {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .textarea-box {
+            margin-top: 20px;
+        }
+        .answer-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">DocQuery: AI-Powered Document Querying</h1>
+
+        <!-- Drag-and-Drop File Upload -->
+        <div class="upload-box" id="uploadBox">
+            <p>Drag and drop a text file here, or <span class="text-primary">click to upload</span>.</p>
+            <input type="file" id="fileInput" accept=".txt" style="display: none;">
+        </div>
+
+        <!-- Document Textarea -->
+        <div class="textarea-box">
+            <textarea id="document" class="form-control" placeholder="Or paste your document here..." rows="10"></textarea>
+        </div>
+
+        <!-- Question Input -->
+        <div class="input-group mt-3">
+            <input type="text" id="question" class="form-control" placeholder="Enter your question here...">
+            <button class="btn btn-primary" onclick="queryDocument()">Query</button>
+        </div>
+
+        <!-- Answer Display -->
+        <div class="answer-box mt-4">
+            <h3>Answer:</h3>
+            <p id="answer" class="mt-2">Your answer will appear here...</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Drag-and-Drop File Upload
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInput = document.getElementById('fileInput');
+        const documentTextarea = document.getElementById('document');
+
+        uploadBox.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                readFile(file);
+            }
+        });
+
+        uploadBox.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            uploadBox.classList.add('dragover');
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.classList.remove('dragover');
+        });
+
+        uploadBox.addEventListener('drop', (event) => {
+            event.preventDefault();
+            uploadBox.classList.remove('dragover');
+            const file = event.dataTransfer.files[0];
+            if (file) {
+                readFile(file);
+            }
+        });
+
+        function readFile(file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                documentTextarea.value = event.target.result;
+            };
+            reader.readAsText(file);
+        }
+
+        // Query Document
+        async function queryDocument() {
+            const document = documentTextarea.value;
+            const question = document.getElementById('question').value;
+
+            if (!document || !question) {
+                alert('Please provide a document and a question.');
+                return;
+            }
+
+            const response = await fetch('http://127.0.0.1:5000/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ document, question }),
+            });
+
+            const data = await response.json();
+            document.getElementById('answer').innerText = data.answer || data.error;
+        }
+    </script>
+</body>
+</html>
